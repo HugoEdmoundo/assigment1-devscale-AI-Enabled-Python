@@ -13,12 +13,7 @@ async def create_item(
     item: ItemCreate,
     x_app_version: str = Header(..., alias="X-App-Version")
 ):
-    """
-    Create a new item
-    
-    - **x_app_version**: Application version header (required)
-    """
-    # Check if item with same name exists
+
     existing_item = session.exec(
         select(Item).where(Item.name == item.name)
     ).first()
@@ -29,14 +24,12 @@ async def create_item(
             detail=f"Item with name '{item.name}' already exists"
         )
     
-    # Validate price
     if item.price <= 0:
         raise HTTPException(
             status_code=400,
             detail="Price must be greater than 0"
         )
     
-    # Create new item
     db_item = Item.from_orm(item)
     session.add(db_item)
     session.commit()
@@ -48,12 +41,10 @@ async def create_item(
 async def read_items(
     *,
     session: Session = Depends(get_session),
-    search: Optional[str] = Query(None, description="Search items by name"),
-    limit: int = Query(10, ge=1, le=100, description="Limit number of results")
+    search: Optional[str] = Query(None),
+    limit: int = Query(10, ge=1, le=100)
 ):
-    """
-    Get list of items with optional search and pagination
-    """
+    
     query = select(Item)
     
     if search:

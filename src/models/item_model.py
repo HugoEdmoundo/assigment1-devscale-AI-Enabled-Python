@@ -21,18 +21,18 @@ class ItemBase(SQLModel):
             raise ValueError('Stock cannot be negative')
         return v
 
-# Database model (table)
+
 class Item(ItemBase, table=True):
     __tablename__ = "items"
     
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-# Create model (for POST requests)
+
 class ItemCreate(ItemBase):
     pass
 
-# Read model (for GET responses)
+
 class ItemRead(ItemBase):
     id: int
     created_at: datetime
